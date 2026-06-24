@@ -26,6 +26,9 @@
   .sec { border-radius:24px; padding:16px; box-shadow:0 8px 24px rgba(46,93,159,.12); margin-top:16px; z-index:2; }
   h1.title { font-family:'Jua',sans-serif; color:#2e5d9f; font-size:30px; margin:0 0 4px; text-shadow:2px 2px 0 #fff; text-align:center; }
   .subtitle { color:#6b8cba; font-size:16px; margin:0 0 14px; text-align:center; }
+  .kidchip { border:none; background:#fff; color:#2e5d9f; font-family:'Jua',sans-serif; font-size:18px; padding:8px 18px; border-radius:99px; box-shadow:0 4px 10px rgba(46,93,159,.15); cursor:pointer; margin:2px 0 14px; }
+  .kidseg { display:flex; gap:8px; width:100%; max-width:460px; margin-bottom:12px; z-index:2; }
+  .kidseg button { flex:1; border:2px solid #cfe0f5; background:#fff; color:#6b8cba; border-radius:16px; padding:12px; font-family:'Jua',sans-serif; font-size:18px; cursor:pointer; }
   .sec-title { font-family:'Jua',sans-serif; color:#2e5d9f; font-size:20px; margin:0 0 12px; }
   @keyframes pop { 0%{transform:scale(0)} 60%{transform:scale(1.3)} 100%{transform:scale(1)} }
   @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
@@ -131,15 +134,22 @@ const DEFAULT_MISSIONS = [
   { id:'walk',    emoji:'🐕', name:'쿠키 산책',   reward:1000 },
   { id:'recycle', emoji:'♻️', name:'분리수거',    reward:300 }
 ];
+const KIDS = [
+  { id:'doyun', name:'도윤', avatar:'🦊', color:'#ffb43d', sh:'#e8920a' },
+  { id:'jiyun', name:'지윤', avatar:'🐻', color:'#5fa0e8', sh:'#3a78c2' }
+];
+const kidMeta = (id)=> KIDS.find(k=>k.id===id) || KIDS[0];
+function freshKids(){ const o={}; KIDS.forEach(k=> o[k.id]={ name:k.name, done:{}, ledger:[] }); return o; }
 
 const LS_ROLE = 'milkRole';
 const getRole = ()=> localStorage.getItem(LS_ROLE);
 const setRole = (r)=> localStorage.setItem(LS_ROLE, r);
 
 const state = {
-  data: { missions: DEFAULT_MISSIONS.slice(), done:{}, ledger:[] },
+  data: { missions: DEFAULT_MISSIONS.slice(), kids: freshKids() },
   y: new Date().getFullYear(),
   m: new Date().getMonth(),
+  viewKid: 'doyun',            // 관리자 화면에서 보고 있는 아이
   confetti: [], justTapped:false, cheer:'',
   sync:'connecting', ready:false
 };
@@ -148,23 +158,33 @@ const state = {
 let db=null, docRef=null;
 const configFilled = CFG.firebase.apiKey && !CFG.firebase.apiKey.startsWith('여기에');
 
-function migrate(d){
-  // done: {date:true}(옛 우유전용) -> {date:[ids]}
-  const done = {};
-  const raw = d.done || {};
+function convDone(raw){
+  const done={}; raw=raw||{};
   Object.keys(raw).forEach(k=>{
-    const v = raw[k];
-    if (v === true) done[k] = ['milk'];
-    else if (Array.isArray(v)) done[k] = v.slice();
-    else if (v && typeof v === 'object') done[k] = Object.keys(v).filter(x=>v[x]); // {milk:true}
+    const v=raw[k];
+    if(v===true) done[k]=['milk'];
+    else if(Array.isArray(v)) done[k]=v.slice();
+    else if(v&&typeof v==='object') done[k]=Object.keys(v).filter(x=>v[x]);
   });
-  let missions = Array.isArray(d.missions) && d.missions.length ? d.missions : DEFAULT_MISSIONS.slice();
-  let ledger = Array.isArray(d.ledger) ? d.ledger : [];
-  // 옛 payouts(지급) -> 지출 항목으로 흡수
-  if (Array.isArray(d.payouts)) {
-    d.payouts.forEach(p=> ledger.push({ id:p.id||rid(), date:p.date, type:'out', amount:p.amount, note:p.note||'지급' }));
+  return done;
+}
+function migrate(d){
+  const missions = (Array.isArray(d.missions)&&d.missions.length)? d.missions : DEFAULT_MISSIONS.slice();
+  let kids;
+  if(d.kids && typeof d.kids==='object' && (d.kids.doyun || d.kids.jiyun)){
+    kids = freshKids();
+    KIDS.forEach(k=>{
+      const src=d.kids[k.id]||{};
+      kids[k.id]={ name:k.name, done:convDone(src.done), ledger:Array.isArray(src.ledger)?src.ledger:[] };
+    });
+  } else {
+    // 옛 단일 아이 구조 -> 도윤이에게 이전
+    let ledger = Array.isArray(d.ledger)? d.ledger.slice() : [];
+    if(Array.isArray(d.payouts)) d.payouts.forEach(p=> ledger.push({ id:p.id||rid(), date:p.date, type:'out', amount:p.amount, note:p.note||'지급' }));
+    kids = freshKids();
+    kids.doyun = { name:'도윤', done:convDone(d.done), ledger };
   }
-  return { missions, done, ledger };
+  return { missions, kids };
 }
 
 function initFirebase(){
@@ -203,15 +223,18 @@ const key = (y,m,d)=> y+'-'+(m+1)+'-'+d;
 const won = (n)=> (Number(n)||0).toLocaleString('ko-KR')+'원';
 const esc = (s)=> String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const missionById = (id)=> state.data.missions.find(m=>m.id===id);
-const doneIds = (y,m,d)=> state.data.done[key(y,m,d)] || [];
+function getKidId(){ return getRole()==='admin' ? (state.viewKid||'doyun') : (localStorage.getItem('milkKid')||'doyun'); }
+function kidData(){ const k=state.data.kids[getKidId()]; return k || (state.data.kids[getKidId()]={ name:kidMeta(getKidId()).name, done:{}, ledger:[] }); }
+const doneIds = (y,m,d)=> kidData().done[key(y,m,d)] || [];
 
 function toggleMission(y,m,d,mid,celebrate){
+  const kd = kidData();
   const k = key(y,m,d);
-  const arr = (state.data.done[k]||[]).slice();
+  const arr = (kd.done[k]||[]).slice();
   const i = arr.indexOf(mid);
   const turningOn = i<0;
   if(turningOn) arr.push(mid); else arr.splice(i,1);
-  if(arr.length) state.data.done[k]=arr; else delete state.data.done[k];
+  if(arr.length) kd.done[k]=arr; else delete kd.done[k];
   save();
   if(turningOn && celebrate){
     fireConfetti();
@@ -239,7 +262,7 @@ function fireConfetti(){
 
 /* ---------- 파생값 ---------- */
 function derive(){
-  const { y,m } = state, done=state.data.done;
+  const { y,m } = state, done=kidData().done;
   let totalCompletions=0, totalEarned=0, monthEarned=0, monthCount=0;
   Object.keys(done).forEach(k=>{
     const isMonth = k.startsWith(y+'-'+(m+1)+'-');
@@ -249,8 +272,9 @@ function derive(){
       if(isMonth){ monthEarned+=rew; monthCount++; }
     });
   });
-  const ledIn  = state.data.ledger.filter(e=>e.type==='in').reduce((s,e)=>s+(Number(e.amount)||0),0);
-  const ledOut = state.data.ledger.filter(e=>e.type==='out').reduce((s,e)=>s+(Number(e.amount)||0),0);
+  const ledger = kidData().ledger;
+  const ledIn  = ledger.filter(e=>e.type==='in').reduce((s,e)=>s+(Number(e.amount)||0),0);
+  const ledOut = ledger.filter(e=>e.type==='out').reduce((s,e)=>s+(Number(e.amount)||0),0);
   const totalIn = totalEarned + ledIn;
   const balance = totalIn - ledOut;
   // streak: 하루에 1개 이상 완료한 날의 연속(오늘 또는 어제 기준)
@@ -269,16 +293,16 @@ function derive(){
 
 /* ---------- 통합 용돈기입장(자동 미션수입 + 수동 항목) ---------- */
 function buildLedger(){
-  const rows=[];
-  Object.keys(state.data.done).forEach(k=>{
-    const ids=state.data.done[k];
+  const rows=[]; const kd=kidData();
+  Object.keys(kd.done).forEach(k=>{
+    const ids=kd.done[k];
     const amt=ids.reduce((s,mid)=>{ const mm=missionById(mid); return s+(mm?(Number(mm.reward)||0):0); },0);
     if(amt>0){
       const names=ids.map(mid=>(missionById(mid)||{}).emoji||'•').join(' ');
       rows.push({ date:k, type:'in', amount:amt, note:'미션 '+ids.length+'개 '+names, auto:true });
     }
   });
-  state.data.ledger.forEach(e=> rows.push(Object.assign({}, e)));
+  kd.ledger.forEach(e=> rows.push(Object.assign({}, e)));
   // 날짜 정렬용 키
   const dkey=(s)=>{ const [y,mo,d]=s.split('-').map(Number); return y*10000+mo*100+d; };
   rows.sort((a,b)=> dkey(a.date)-dkey(b.date) || (a.auto?-1:1));
@@ -288,7 +312,7 @@ function buildLedger(){
 
 /* ---------- 달력 ---------- */
 function buildCells(){
-  const { y,m }=state; const done=state.data.done;
+  const { y,m }=state;
   const first=new Date(y,m,1).getDay(); const daysIn=new Date(y,m+1,0).getDate();
   const today=new Date(); const isThisMonth=today.getFullYear()===y&&today.getMonth()===m;
   let html='';
@@ -316,6 +340,7 @@ function renderKid(){
   const today=new Date();
   const ty=today.getFullYear(), tm=today.getMonth(), td=today.getDate();
   const todayIds=doneIds(ty,tm,td);
+  const meta=kidMeta(getKidId()); const kname=kidData().name||meta.name;
   const total=state.data.missions.length;
   const allDone= total>0 && todayIds.length>=total;
   const face= allDone? '🐮':'🐄';
@@ -350,7 +375,7 @@ function renderKid(){
     <button class="gear" id="gear">⚙️</button>
     <div class="confetti-wrap">${confettiHtml}</div>
     <h1 class="title">🏆 우리집 미션 게임</h1>
-    <p class="subtitle">미션 하고 용돈 모으기 🐮</p>
+    <button id="kidChip" class="kidchip">${meta.avatar} ${esc(kname)} ▾</button>
 
     <div class="card hero">
       <div style="font-size:78px; line-height:1; animation:${anim};">${face}</div>
@@ -405,6 +430,7 @@ function renderKid(){
   </div>`;
 
   document.getElementById('gear').onclick=openSettings;
+  document.getElementById('kidChip').onclick=openKidSwitch;
   document.getElementById('prev').onclick=()=>shiftMonth(-1);
   document.getElementById('next').onclick=()=>shiftMonth(1);
   document.getElementById('spendBtn').onclick=()=>openEntry('out', true);
@@ -446,6 +472,7 @@ function renderAdmin(){
     <button class="gear" id="gear">⚙️</button>
     <div class="adminbadge">👨‍👦 아빠 관리자 모드</div>
     <h1 class="title">우리집 미션 현황</h1>
+    <div class="kidseg">${KIDS.map(k=>`<button data-vk="${k.id}" style="${state.viewKid===k.id?('background:'+k.color+';color:#fff;border-color:'+k.color):''}">${k.avatar} ${k.name}</button>`).join('')}</div>
 
     <div class="card hero" style="text-align:left;">
       <div class="statgrid">
@@ -496,6 +523,7 @@ function renderAdmin(){
   </div>`;
 
   document.getElementById('gear').onclick=openSettings;
+  document.querySelectorAll('[data-vk]').forEach(b=> b.onclick=()=>{ state.viewKid=b.getAttribute('data-vk'); render(); });
   document.getElementById('prev').onclick=()=>shiftMonth(-1);
   document.getElementById('next').onclick=()=>shiftMonth(1);
   document.getElementById('addMission').onclick=()=>openMission(null);
@@ -517,7 +545,7 @@ function deleteMission(id){
   state.data.missions=state.data.missions.filter(x=>x.id!==id);
   save(); render();
 }
-function deleteEntry(id){ state.data.ledger=state.data.ledger.filter(e=>e.id!==id); save(); render(); }
+function deleteEntry(id){ const kd=kidData(); kd.ledger=kd.ledger.filter(e=>e.id!==id); save(); render(); }
 
 /* 미션 추가/수정 */
 function openMission(id){
@@ -573,12 +601,12 @@ function openEntry(type, kid, existing){
     const dateKey = yy+'-'+mm+'-'+dd;
     const note=ov.querySelector('#eNote').value.trim();
     if(e){ e.type=t; e.amount=amount; e.note=note; e.date=dateKey; delete e.date9; }
-    else { state.data.ledger.push({ id:rid(), type:t, amount, note, date:dateKey }); }
+    else { kidData().ledger.push({ id:rid(), type:t, amount, note, date:dateKey }); }
     save(); ov.remove(); render();
   };
 }
 function editEntry(id){
-  const e=state.data.ledger.find(x=>x.id===id); if(!e) return;
+  const e=kidData().ledger.find(x=>x.id===id); if(!e) return;
   // date(YYYY-M-D) -> input[type=date] 용 YYYY-MM-DD
   const [y,m,d]=e.date.split('-').map(Number);
   e.date9 = y+'-'+String(m).padStart(2,'0')+'-'+String(d).padStart(2,'0');
@@ -831,10 +859,21 @@ function syncLabel(){
   if(!configFilled) return '⚠️ Firebase 미설정 — 이 기기에만 저장됩니다';
   return { connecting:'☁️ 연결 중…', ok:'✅ 실시간 동기화 켜짐', offline:'📴 오프라인 — 연결되면 자동 저장', error:'⚠️ 연결 오류' }[state.sync]||'';
 }
+function kidPickOverlay(sticky){
+  const btns=KIDS.map(k=>`<button class="rolebtn" style="background:${k.color}; box-shadow:0 6px 0 ${k.sh};" data-kid="${k.id}">${k.avatar} ${k.name}</button>`).join('');
+  const ov=makeOverlay(`<h2>누구야?</h2><p>이 폰에서 사용할 사람을 골라줘</p>${btns}${sticky?'':'<button class="smallbtn" id="kpClose" style="width:100%; margin-top:4px;">닫기</button>'}`, sticky);
+  ov.querySelectorAll('[data-kid]').forEach(b=> b.onclick=()=>{ localStorage.setItem('milkKid', b.getAttribute('data-kid')); ov.remove(); render(); });
+  const c=ov.querySelector('#kpClose'); if(c) c.onclick=()=>ov.remove();
+}
+function chooseKid(){ kidPickOverlay(true); }
+function openKidSwitch(){ kidPickOverlay(false); }
+
 function render(){
   if(!state.ready) return;
   if(!getRole()){ renderKid(); if(!document.querySelector('.overlay')) chooseRole(); return; }
-  if(getRole()==='admin') renderAdmin(); else renderKid();
+  if(getRole()==='admin'){ renderAdmin(); return; }
+  if(!localStorage.getItem('milkKid')){ renderKid(); if(!document.querySelector('.overlay')) chooseKid(); return; }
+  renderKid();
 }
 
 /* ---------- 부팅 ---------- */
