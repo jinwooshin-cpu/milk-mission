@@ -719,10 +719,10 @@ function openCarGame(){
       if(o.z<0.4) return; const p=1/o.z; if(p<0.015) return;
       const half=ROADW*p; const cx=W/2+curveOffset(p)-g.px*half;
       const ox=cx+o.x*half; const sy=horizon+denom*p;
-      drawCar(ox, sy, Math.max(10, half*0.62), o.color);
+      drawCar(ox, sy, Math.max(8, half*0.46), o.color);
     });
     // player car
-    drawCar(W/2, H*0.9, ROADW*0.5, '#ffd54f');
+    drawCar(W/2 + (g.px*ROADW*0.05), H*0.92, ROADW*0.26, '#ffd54f');
     // crash flash
     if(g.inv>0.78){ ctx.fillStyle='rgba(255,80,80,'+((g.inv-0.78)/0.22*0.4)+')'; ctx.fillRect(0,0,W,H); }
     ctx.restore();
