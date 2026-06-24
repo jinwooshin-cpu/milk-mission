@@ -1,0 +1,16 @@
+{
+  "name": "우유 미션 게임",
+  "short_name": "우유 미션",
+  "description": "매일 우유 마시고 체크하면 용돈이 쌓이는 어린이 미션 앱",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#bfe3ff",
+  "theme_color": "#bfe3ff",
+  "lang": "ko",
+  "icons": [
+    { "src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}
