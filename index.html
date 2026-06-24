@@ -6,8 +6,8 @@
 <meta name="theme-color" content="#bfe3ff">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="우유 미션">
-<title>🥛 우유 미션 게임</title>
+<meta name="apple-mobile-web-app-title" content="우리집 미션">
+<title>🏆 우리집 미션 게임</title>
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" type="image/svg+xml" href="./icon.svg">
 <link rel="apple-touch-icon" href="./icon.svg">
@@ -17,16 +17,16 @@
   html,body { margin:0; padding:0; }
   body {
     background:linear-gradient(180deg,#bfe3ff 0%,#eaf6ff 55%,#dff3e4 100%);
-    background-attachment:fixed;
-    font-family:'Gaegu',sans-serif; color:#33405a;
-    min-height:100vh;
+    background-attachment:fixed; font-family:'Gaegu',sans-serif; color:#33405a; min-height:100vh;
   }
   button { font-family:inherit; }
-  .wrap { min-height:100vh; padding:max(24px,env(safe-area-inset-top)) 16px calc(70px + env(safe-area-inset-bottom)); display:flex; flex-direction:column; align-items:center; position:relative; overflow:hidden; }
+  .wrap { min-height:100vh; padding:max(20px,env(safe-area-inset-top)) 14px calc(70px + env(safe-area-inset-bottom)); display:flex; flex-direction:column; align-items:center; position:relative; overflow:hidden; }
   .card { background:#fff; width:100%; max-width:460px; box-sizing:border-box; }
-  .hero { border-radius:30px; padding:22px; box-shadow:0 10px 30px rgba(46,93,159,.15); text-align:center; position:relative; z-index:2; }
-  .calcard { border-radius:24px; padding:18px; box-shadow:0 8px 24px rgba(46,93,159,.12); margin-top:18px; z-index:2; }
-  h1.title { font-family:'Jua',sans-serif; color:#2e5d9f; font-size:34px; margin:0 0 16px; text-shadow:2px 2px 0 #fff; text-align:center; }
+  .hero { border-radius:30px; padding:20px; box-shadow:0 10px 30px rgba(46,93,159,.15); text-align:center; position:relative; z-index:2; }
+  .sec { border-radius:24px; padding:16px; box-shadow:0 8px 24px rgba(46,93,159,.12); margin-top:16px; z-index:2; }
+  h1.title { font-family:'Jua',sans-serif; color:#2e5d9f; font-size:30px; margin:0 0 4px; text-shadow:2px 2px 0 #fff; text-align:center; }
+  .subtitle { color:#6b8cba; font-size:16px; margin:0 0 14px; text-align:center; }
+  .sec-title { font-family:'Jua',sans-serif; color:#2e5d9f; font-size:20px; margin:0 0 12px; }
   @keyframes pop { 0%{transform:scale(0)} 60%{transform:scale(1.3)} 100%{transform:scale(1)} }
   @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
   @keyframes wiggle { 0%,100%{transform:rotate(0)} 25%{transform:rotate(-7deg)} 75%{transform:rotate(7deg)} }
@@ -35,43 +35,56 @@
   .grid7 { display:grid; grid-template-columns:repeat(7,1fr); gap:5px; }
   .cell { min-height:46px; border-radius:12px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; position:relative; user-select:none; }
   .arrow { border:none; background:#eaf4ff; color:#2e5d9f; font-size:22px; width:40px; height:40px; border-radius:14px; cursor:pointer; font-family:'Jua',sans-serif; }
-  .linkbtn { margin-top:18px; border:none; background:transparent; color:#9bb3d4; font-size:16px; cursor:pointer; text-decoration:underline; font-family:'Gaegu',sans-serif; z-index:2; }
-  /* setup / overlay */
-  .overlay { position:fixed; inset:0; background:rgba(46,93,159,.35); backdrop-filter:blur(2px); display:flex; align-items:center; justify-content:center; padding:20px; z-index:50; }
-  .sheet { background:#fff; border-radius:26px; padding:24px; width:100%; max-width:380px; box-shadow:0 20px 50px rgba(46,93,159,.3); text-align:center; }
-  .sheet h2 { font-family:'Jua',sans-serif; color:#2e5d9f; margin:0 0 6px; font-size:26px; }
-  .sheet p { color:#6b8cba; margin:0 0 18px; font-size:17px; }
+  .linkbtn { border:none; background:transparent; color:#9bb3d4; font-size:15px; cursor:pointer; text-decoration:underline; font-family:'Gaegu',sans-serif; }
+  /* mission rows */
+  .mrow { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:16px; margin-bottom:8px; background:#f4f8ff; border:2px solid #e3edfb; }
+  .mrow.on { background:#fff7d6; border-color:#ffd76b; }
+  .memoji { font-size:30px; line-height:1; }
+  .mname { font-family:'Jua',sans-serif; font-size:18px; color:#2e5d9f; }
+  .mrew { font-size:14px; color:#6cbf73; }
+  .mbtn { border:none; cursor:pointer; font-family:'Jua',sans-serif; font-size:16px; padding:10px 14px; border-radius:14px; color:#fff; white-space:nowrap; }
+  .mbtn.do { background:#ffb43d; box-shadow:0 4px 0 #e8920a; }
+  .mbtn.done { background:#8fd694; box-shadow:0 4px 0 #6cbf73; }
+  /* generic boxes */
+  .twobox { display:flex; gap:10px; margin-top:14px; }
+  .bbox { flex:1; border-radius:16px; padding:10px; text-align:center; }
+  .bigbtn { border:none; cursor:pointer; font-family:'Jua',sans-serif; font-size:20px; padding:14px; border-radius:18px; color:#fff; width:100%; }
+  /* overlay */
+  .overlay { position:fixed; inset:0; background:rgba(46,93,159,.35); backdrop-filter:blur(2px); display:flex; align-items:center; justify-content:center; padding:18px; z-index:50; }
+  .sheet { background:#fff; border-radius:26px; padding:22px; width:100%; max-width:390px; box-shadow:0 20px 50px rgba(46,93,159,.3); text-align:center; max-height:88vh; overflow:auto; }
+  .sheet h2 { font-family:'Jua',sans-serif; color:#2e5d9f; margin:0 0 6px; font-size:24px; }
+  .sheet p { color:#6b8cba; margin:0 0 16px; font-size:16px; }
   .rolebtn { display:block; width:100%; border:none; border-radius:18px; padding:18px; font-family:'Jua',sans-serif; font-size:22px; color:#fff; cursor:pointer; margin-bottom:12px; }
   .rolebtn.kid { background:#ffb43d; box-shadow:0 6px 0 #e8920a; }
   .rolebtn.dad { background:#5fa0e8; box-shadow:0 6px 0 #3a78c2; }
   .pininput { font-family:'Jua',sans-serif; font-size:30px; text-align:center; letter-spacing:10px; width:100%; padding:14px; border:3px solid #cfe0f5; border-radius:16px; margin-bottom:14px; color:#2e5d9f; }
-  .smallbtn { border:none; background:#eaf4ff; color:#2e5d9f; border-radius:14px; padding:12px 18px; font-family:'Jua',sans-serif; font-size:17px; cursor:pointer; }
+  .field { width:100%; padding:12px; border:3px solid #cfe0f5; border-radius:14px; font-family:'Gaegu',sans-serif; font-size:18px; margin-bottom:10px; }
+  .smallbtn { border:none; background:#eaf4ff; color:#2e5d9f; border-radius:14px; padding:12px 16px; font-family:'Jua',sans-serif; font-size:16px; cursor:pointer; }
   .smallbtn.primary { background:#5fa0e8; color:#fff; box-shadow:0 4px 0 #3a78c2; }
-  .gear { position:absolute; top:16px; right:14px; background:rgba(255,255,255,.7); border:none; width:40px; height:40px; border-radius:50%; font-size:20px; cursor:pointer; z-index:6; }
+  .gear { position:absolute; top:14px; right:12px; background:rgba(255,255,255,.7); border:none; width:40px; height:40px; border-radius:50%; font-size:20px; cursor:pointer; z-index:6; }
   .statusbar { font-size:13px; color:#9bb3d4; margin-top:10px; text-align:center; min-height:18px; z-index:2; }
-  /* admin */
   .adminbadge { display:inline-block; background:#5fa0e8; color:#fff; font-family:'Jua',sans-serif; font-size:15px; padding:5px 14px; border-radius:99px; margin-bottom:10px; }
   .statgrid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px; }
   .statbox { border-radius:16px; padding:12px; text-align:center; }
   .statbox .lab { font-size:15px; }
-  .statbox .val { font-family:'Jua',sans-serif; font-size:26px; }
-  .rewardrow { display:flex; align-items:center; gap:8px; justify-content:center; margin:6px 0 4px; }
-  .stepbtn { border:none; background:#eaf4ff; color:#2e5d9f; font-family:'Jua',sans-serif; font-size:22px; width:44px; height:44px; border-radius:14px; cursor:pointer; }
-  .rewardval { font-family:'Jua',sans-serif; font-size:30px; color:#2e9e3a; min-width:120px; }
-  .paybtn { border:none; background:#8fd694; color:#fff; box-shadow:0 5px 0 #6cbf73; font-family:'Jua',sans-serif; font-size:20px; padding:14px; border-radius:18px; width:100%; cursor:pointer; }
-  .payitem { display:flex; justify-content:space-between; align-items:center; background:#f7faff; border-radius:12px; padding:10px 12px; margin-top:8px; font-size:16px; }
-  .delx { border:none; background:#ffe2e2; color:#d35; border-radius:10px; width:30px; height:30px; cursor:pointer; font-size:16px; }
-  .field { width:100%; padding:12px; border:3px solid #cfe0f5; border-radius:14px; font-family:'Gaegu',sans-serif; font-size:18px; margin-bottom:10px; }
-  .hint { font-size:13px; color:#c0392b; background:#fdecea; border-radius:12px; padding:10px 12px; margin:0 auto 14px; max-width:460px; line-height:1.5; }
+  .statbox .val { font-family:'Jua',sans-serif; font-size:24px; }
+  .stepbtn { border:none; background:#eaf4ff; color:#2e5d9f; font-family:'Jua',sans-serif; font-size:22px; width:40px; height:40px; border-radius:14px; cursor:pointer; }
+  .ledrow { display:flex; justify-content:space-between; align-items:center; padding:9px 12px; border-radius:12px; margin-top:7px; background:#f7faff; font-size:15px; }
+  .ledrow .amt.in { color:#2e9e3a; font-family:'Jua',sans-serif; }
+  .ledrow .amt.out { color:#d35400; font-family:'Jua',sans-serif; }
+  .delx { border:none; background:#ffe2e2; color:#d35; border-radius:10px; width:28px; height:28px; cursor:pointer; font-size:14px; }
+  .editx { border:none; background:#e7f0ff; color:#3a78c2; border-radius:10px; width:28px; height:28px; cursor:pointer; font-size:14px; margin-right:5px; }
+  .seg { display:flex; gap:8px; margin-bottom:12px; }
+  .seg button { flex:1; border:2px solid #cfe0f5; background:#fff; border-radius:14px; padding:12px; font-family:'Jua',sans-serif; font-size:16px; cursor:pointer; color:#6b8cba; }
+  .seg button.sel-in { background:#eaf7ec; border-color:#8fd694; color:#2e9e3a; }
+  .seg button.sel-out { background:#fdeee3; border-color:#ffb37a; color:#d35400; }
 </style>
 </head>
 <body>
-<div id="app"><div class="wrap"><h1 class="title">🥛 우유 미션</h1><p style="color:#6b8cba">불러오는 중…</p></div></div>
+<div id="app"><div class="wrap"><h1 class="title">🏆 우리집 미션</h1><p style="color:#6b8cba">불러오는 중…</p></div></div>
 
-<!-- ===================== 설정값: 배포 전 여기만 채우세요 ===================== -->
+<!-- ===================== 설정값 ===================== -->
 <script>
-  // 1) Firebase 콘솔 > 프로젝트 설정 > "내 앱"의 firebaseConfig 값을 붙여넣으세요.
-  //    (배포가이드.md 참고)
   window.MILK_CONFIG = {
     firebase: {
       apiKey: "AIzaSyDTTJrfVQc7tn8CwGO3u1p9oZlq5y4BZT8",
@@ -81,67 +94,72 @@
       messagingSenderId: "501021939041",
       appId: "1:501021939041:web:c2603165d76f2284c7e120"
     },
-    // 2) 우리 가족 방 이름(아무 영문/숫자나, 두 폰이 같으면 됨). 예: "shin-family"
     familyCode: "shin-family",
-    // 3) 아빠 관리자 모드 진입 비밀번호 4자리 (아들이 모르게 바꾸세요)
-    adminPin: "2580",
-    // 한 잔당 기본 용돈(원). 관리자 모드에서 언제든 바꿀 수 있어요.
-    defaultReward: 500
+    adminPin: "2580"
   };
 </script>
-<!-- ======================================================================= -->
+<!-- ================================================= -->
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import {
-  getFirestore, doc, onSnapshot, setDoc, getDoc,
-  enableIndexedDbPersistence
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, onSnapshot, setDoc, enableIndexedDbPersistence }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const CFG = window.MILK_CONFIG;
 const appEl = document.getElementById('app');
 
-/* ---------- 로컬 설정(이 기기의 역할) ---------- */
-const LS_ROLE = 'milkRole';        // 'kid' | 'admin'
-function getRole(){ return localStorage.getItem(LS_ROLE); }
-function setRole(r){ localStorage.setItem(LS_ROLE, r); }
+const DEFAULT_MISSIONS = [
+  { id:'milk',    emoji:'🥛', name:'우유 마시기', reward:500 },
+  { id:'walk',    emoji:'🐕', name:'쿠키 산책',   reward:1000 },
+  { id:'recycle', emoji:'♻️', name:'분리수거',    reward:300 }
+];
 
-/* ---------- 상태 ---------- */
+const LS_ROLE = 'milkRole';
+const getRole = ()=> localStorage.getItem(LS_ROLE);
+const setRole = (r)=> localStorage.setItem(LS_ROLE, r);
+
 const state = {
-  data: { done:{}, reward: CFG.defaultReward, payouts:[] }, // 서버와 동기화되는 공유 데이터
+  data: { missions: DEFAULT_MISSIONS.slice(), done:{}, ledger:[] },
   y: new Date().getFullYear(),
   m: new Date().getMonth(),
-  confetti: [],
-  justTapped: false,
-  speechIdx: 0,
-  sync: 'connecting',   // connecting | ok | offline | error
-  ready: false
+  confetti: [], justTapped:false, cheer:'',
+  sync:'connecting', ready:false
 };
 
 /* ---------- Firebase ---------- */
-let db=null, docRef=null, writing=false;
+let db=null, docRef=null;
 const configFilled = CFG.firebase.apiKey && !CFG.firebase.apiKey.startsWith('여기에');
+
+function migrate(d){
+  // done: {date:true}(옛 우유전용) -> {date:[ids]}
+  const done = {};
+  const raw = d.done || {};
+  Object.keys(raw).forEach(k=>{
+    const v = raw[k];
+    if (v === true) done[k] = ['milk'];
+    else if (Array.isArray(v)) done[k] = v.slice();
+    else if (v && typeof v === 'object') done[k] = Object.keys(v).filter(x=>v[x]); // {milk:true}
+  });
+  let missions = Array.isArray(d.missions) && d.missions.length ? d.missions : DEFAULT_MISSIONS.slice();
+  let ledger = Array.isArray(d.ledger) ? d.ledger : [];
+  // 옛 payouts(지급) -> 지출 항목으로 흡수
+  if (Array.isArray(d.payouts)) {
+    d.payouts.forEach(p=> ledger.push({ id:p.id||rid(), date:p.date, type:'out', amount:p.amount, note:p.note||'지급' }));
+  }
+  return { missions, done, ledger };
+}
 
 function initFirebase(){
   if(!configFilled) return false;
   try {
     const fbApp = initializeApp(CFG.firebase);
     db = getFirestore(fbApp);
-    enableIndexedDbPersistence(db).catch(()=>{}); // 오프라인 캐시(여러 탭이면 실패 가능 — 무시)
+    enableIndexedDbPersistence(db).catch(()=>{});
     docRef = doc(db, 'families', CFG.familyCode);
     onSnapshot(docRef, (snap)=>{
-      state.sync = 'ok';
-      if(snap.exists()){
-        const d = snap.data();
-        state.data = {
-          done: d.done || {},
-          reward: (typeof d.reward==='number') ? d.reward : CFG.defaultReward,
-          payouts: Array.isArray(d.payouts) ? d.payouts : []
-        };
-      } else {
-        // 최초 1회 문서 생성
-        save();
-      }
+      state.sync='ok';
+      if(snap.exists()){ state.data = migrate(snap.data()); }
+      else { save(); }
       render();
     }, (err)=>{ state.sync='error'; console.error(err); render(); });
     return true;
@@ -150,164 +168,212 @@ function initFirebase(){
 
 let saveTimer=null;
 function save(){
-  // 로컬 백업
-  try { localStorage.setItem('milkMission', JSON.stringify(state.data.done)); } catch(e){}
-  if(!docRef){ return; }
+  try { localStorage.setItem('milkData', JSON.stringify(state.data)); } catch(e){}
+  if(!docRef) return;
   clearTimeout(saveTimer);
   saveTimer = setTimeout(()=>{
-    setDoc(docRef, state.data, { merge:true })
+    setDoc(docRef, state.data, { merge:false })
       .then(()=>{ if(state.sync!=='ok'){ state.sync='ok'; render(); } })
-      .catch((e)=>{ state.sync='offline'; console.warn('저장 대기(오프라인):',e); render(); });
+      .catch((e)=>{ state.sync='offline'; console.warn('오프라인 저장 대기:',e); render(); });
   }, 150);
 }
 
-/* ---------- 공통 로직 ---------- */
+/* ---------- 유틸 ---------- */
 const WEEKDAYS = ['일','월','화','수','목','금','토'];
-const SPEECHES = ['우유 최고야! 🐮','뼈가 튼튼해졌어!','오늘도 성공! 멋져!','꿀꺽꿀꺽 잘했어!','용돈 GET!','내일도 같이 하자!'];
-const LEVEL_EMOJI = ['🐣','🐥','🐤','🐔','🦄','👑'];
+const rid = ()=> Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const key = (y,m,d)=> y+'-'+(m+1)+'-'+d;
+const won = (n)=> (Number(n)||0).toLocaleString('ko-KR')+'원';
+const esc = (s)=> String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const missionById = (id)=> state.data.missions.find(m=>m.id===id);
+const doneIds = (y,m,d)=> state.data.done[key(y,m,d)] || [];
 
-function key(y,m,d){ return y + '-' + (m+1) + '-' + d; }
-function monthPrefix(y,m){ return y + '-' + (m+1) + '-'; }
-
-function toggle(y,m,d, celebrate){
+function toggleMission(y,m,d,mid,celebrate){
   const k = key(y,m,d);
-  const done = Object.assign({}, state.data.done);
-  const turningOn = !done[k];
-  if(done[k]) delete done[k]; else done[k]=true;
-  state.data.done = done;
+  const arr = (state.data.done[k]||[]).slice();
+  const i = arr.indexOf(mid);
+  const turningOn = i<0;
+  if(turningOn) arr.push(mid); else arr.splice(i,1);
+  if(arr.length) state.data.done[k]=arr; else delete state.data.done[k];
   save();
   if(turningOn && celebrate){
     fireConfetti();
+    const mn = (missionById(mid)||{}).name || '';
+    const cheers = ['최고야! 🎉', mn+' 완료! 멋져!', '오늘도 성공!', '잘했어! 👏', '용돈 GET! 💰', '내일도 같이 하자!'];
+    state.cheer = cheers[Math.floor(Math.random()*cheers.length)];
     state.justTapped = true;
-    state.speechIdx = Math.floor(Math.random()*SPEECHES.length);
     clearTimeout(window._jt);
-    window._jt = setTimeout(()=>{ state.justTapped=false; render(); }, 900);
+    window._jt = setTimeout(()=>{ state.justTapped=false; render(); }, 1000);
   }
   render();
 }
 
 function fireConfetti(){
-  const colors = ['#ffd76b','#8fd694','#7fb0ff','#ff9bb3','#c9a0ff','#ffa94d'];
+  const colors=['#ffd76b','#8fd694','#7fb0ff','#ff9bb3','#c9a0ff','#ffa94d'];
   const pieces=[];
   for(let i=0;i<26;i++){
     pieces.push('position:absolute; top:-10px; left:'+(5+Math.random()*90)+'%; width:11px; height:14px; background:'
       +colors[i%colors.length]+'; border-radius:2px; animation:confetti '+(1.1+Math.random()*0.9)+'s ease-in '+(Math.random()*0.25)+'s forwards;');
   }
-  state.confetti = pieces;
+  state.confetti=pieces;
   clearTimeout(window._ct);
-  window._ct = setTimeout(()=>{ state.confetti=[]; render(); }, 2400);
+  window._ct=setTimeout(()=>{ state.confetti=[]; render(); },2400);
 }
 
-function streakCount(){
-  const done = state.data.done;
-  let n=0; const t=new Date();
+/* ---------- 파생값 ---------- */
+function derive(){
+  const { y,m } = state, done=state.data.done;
+  let totalCompletions=0, totalEarned=0, monthEarned=0, monthCount=0;
+  Object.keys(done).forEach(k=>{
+    const isMonth = k.startsWith(y+'-'+(m+1)+'-');
+    done[k].forEach(mid=>{
+      const mm = missionById(mid); const rew = mm? (Number(mm.reward)||0):0;
+      totalCompletions++; totalEarned+=rew;
+      if(isMonth){ monthEarned+=rew; monthCount++; }
+    });
+  });
+  const ledIn  = state.data.ledger.filter(e=>e.type==='in').reduce((s,e)=>s+(Number(e.amount)||0),0);
+  const ledOut = state.data.ledger.filter(e=>e.type==='out').reduce((s,e)=>s+(Number(e.amount)||0),0);
+  const totalIn = totalEarned + ledIn;
+  const balance = totalIn - ledOut;
+  // streak: 하루에 1개 이상 완료한 날의 연속(오늘 또는 어제 기준)
+  let streak=0; const t=new Date();
   for(let i=0;i<400;i++){
     const dt=new Date(t.getFullYear(),t.getMonth(),t.getDate()-i);
-    if(done[key(dt.getFullYear(),dt.getMonth(),dt.getDate())]) n++;
+    if((done[key(dt.getFullYear(),dt.getMonth(),dt.getDate())]||[]).length) streak++;
     else { if(i===0) continue; break; }
   }
-  return n;
+  const level = Math.floor(totalCompletions/7)+1;
+  const toNext = 7-(totalCompletions%7);
+  const progressPct = ((totalCompletions%7)/7)*100;
+  const levelEmoji = ['🐣','🐥','🐤','🐔','🦄','👑'][Math.min(level-1,5)];
+  return { totalCompletions, totalEarned, monthEarned, monthCount, ledIn, ledOut, totalIn, balance, streak, level, toNext, progressPct, levelEmoji };
 }
 
-function derive(){
-  const { y,m } = state;
-  const done = state.data.done;
-  const reward = state.data.reward;
-  const totalAll = Object.keys(done).length;
-  const doneCount = Object.keys(done).filter(k=>k.startsWith(monthPrefix(y,m))).length;
-  const money = doneCount * reward;
-  const streak = streakCount();
-  const level = Math.floor(totalAll/7)+1;
-  const toNext = 7 - (totalAll%7);
-  const progressPct = ((totalAll%7)/7)*100;
-  const levelEmoji = LEVEL_EMOJI[Math.min(level-1, LEVEL_EMOJI.length-1)];
-  const totalPaid = (state.data.payouts||[]).reduce((s,p)=>s+(Number(p.amount)||0),0);
-  const totalEarned = totalAll * reward;
-  const balance = totalEarned - totalPaid;
-  return { totalAll, doneCount, money, streak, level, toNext, progressPct, levelEmoji, reward, totalPaid, totalEarned, balance };
+/* ---------- 통합 용돈기입장(자동 미션수입 + 수동 항목) ---------- */
+function buildLedger(){
+  const rows=[];
+  Object.keys(state.data.done).forEach(k=>{
+    const ids=state.data.done[k];
+    const amt=ids.reduce((s,mid)=>{ const mm=missionById(mid); return s+(mm?(Number(mm.reward)||0):0); },0);
+    if(amt>0){
+      const names=ids.map(mid=>(missionById(mid)||{}).emoji||'•').join(' ');
+      rows.push({ date:k, type:'in', amount:amt, note:'미션 '+ids.length+'개 '+names, auto:true });
+    }
+  });
+  state.data.ledger.forEach(e=> rows.push(Object.assign({}, e)));
+  // 날짜 정렬용 키
+  const dkey=(s)=>{ const [y,mo,d]=s.split('-').map(Number); return y*10000+mo*100+d; };
+  rows.sort((a,b)=> dkey(a.date)-dkey(b.date) || (a.auto?-1:1));
+  let run=0; rows.forEach(r=>{ run += r.type==='in'? r.amount : -r.amount; r.bal=run; });
+  return rows;
 }
 
-function won(n){ return (Number(n)||0).toLocaleString('ko-KR') + '원'; }
-
-/* ---------- 달력 셀 빌드 ---------- */
+/* ---------- 달력 ---------- */
 function buildCells(){
-  const { y,m } = state;
-  const done = state.data.done;
-  const first = new Date(y,m,1).getDay();
-  const daysIn = new Date(y,m+1,0).getDate();
-  const today = new Date();
-  const isThisMonth = today.getFullYear()===y && today.getMonth()===m;
+  const { y,m }=state; const done=state.data.done;
+  const first=new Date(y,m,1).getDay(); const daysIn=new Date(y,m+1,0).getDate();
+  const today=new Date(); const isThisMonth=today.getFullYear()===y&&today.getMonth()===m;
   let html='';
-  for(let i=0;i<first;i++) html += '<div style="min-height:46px;"></div>';
-  for(let d=1; d<=daysIn; d++){
-    const isDone = !!done[key(y,m,d)];
-    const isToday = isThisMonth && today.getDate()===d;
-    const bg = isDone ? 'background:#fff7d6; border:2px solid #ffd76b;'
-                      : 'background:#f4f8ff; border:2px solid '+(isToday?'#7fb0ff':'transparent')+';';
-    const numCol = isDone ? '#c79100' : '#5a7bab';
-    const mark = isDone ? '<span style="font-size:18px; animation:pop .35s ease;">🥛</span>' : '';
-    html += '<div class="cell" style="'+bg+'" data-d="'+d+'">'
-          + '<span style="font-size:13px; color:'+numCol+'; font-weight:700;">'+d+'</span>'+mark+'</div>';
+  for(let i=0;i<first;i++) html+='<div style="min-height:46px;"></div>';
+  for(let d=1;d<=daysIn;d++){
+    const ids=doneIds(y,m,d); const n=ids.length;
+    const isToday=isThisMonth&&today.getDate()===d;
+    const bg = n? 'background:#fff7d6; border:2px solid #ffd76b;' : 'background:#f4f8ff; border:2px solid '+(isToday?'#7fb0ff':'transparent')+';';
+    const numCol = n? '#c79100':'#5a7bab';
+    const mark = n? '<span style="font-size:12px; animation:pop .35s ease;">⭐'+n+'</span>' : '';
+    html+='<div class="cell" style="'+bg+'" data-d="'+d+'"><span style="font-size:13px; color:'+numCol+'; font-weight:700;">'+d+'</span>'+mark+'</div>';
   }
   return html;
 }
+function bindCells(){
+  document.querySelectorAll('#cells .cell').forEach(c=>{
+    const d=parseInt(c.getAttribute('data-d'),10);
+    c.onclick=()=> openDay(state.y, state.m, d);
+  });
+}
 
-/* ---------- 화면: 아들 모드 ---------- */
+/* ---------- 아이 모드 ---------- */
 function renderKid(){
-  const v = derive();
-  const today = new Date();
-  const isThisMonth = today.getFullYear()===state.y && today.getMonth()===state.m;
-  const todayDone = isThisMonth && !!state.data.done[key(today.getFullYear(),today.getMonth(),today.getDate())];
-  const cowFace = todayDone ? '🐮' : '🐄';
-  const cowAnim = state.justTapped ? 'wiggle .6s ease' : 'float 3s ease-in-out infinite';
-  const speech = state.justTapped ? SPEECHES[state.speechIdx]
-               : todayDone ? '오늘 미션 완료! 내일 또 보자 😊'
-               : '오늘 저녁 우유 마셨어? 버튼을 눌러줘!';
-  const tapLabel = todayDone ? '✓ 오늘 완료!' : '🥛 우유 마셨어요!';
-  const tapStyle = 'border:none; cursor:pointer; font-family:Jua,sans-serif; font-size:24px; padding:16px 28px; border-radius:20px; color:#fff; width:100%;'
-    + (todayDone ? 'background:#8fd694; box-shadow:0 5px 0 #6cbf73;' : 'background:#ffb43d; box-shadow:0 6px 0 #e8920a;');
+  const v=derive();
+  const today=new Date();
+  const ty=today.getFullYear(), tm=today.getMonth(), td=today.getDate();
+  const todayIds=doneIds(ty,tm,td);
+  const total=state.data.missions.length;
+  const allDone= total>0 && todayIds.length>=total;
+  const face= allDone? '🐮':'🐄';
+  const anim= state.justTapped? 'wiggle .6s ease':'float 3s ease-in-out infinite';
+  const speech= state.justTapped? state.cheer
+              : allDone? '오늘 미션 전부 완료! 최고야 😊'
+              : todayIds.length? '잘하고 있어! 남은 미션도 도전! 💪'
+              : '오늘의 미션을 시작해볼까? 👇';
 
-  const confettiHtml = state.confetti.map(s=>'<div style="'+s+'"></div>').join('');
+  const missionHtml = state.data.missions.map(mm=>{
+    const on=todayIds.includes(mm.id);
+    return `<div class="mrow ${on?'on':''}">
+      <span class="memoji">${mm.emoji||'⭐'}</span>
+      <div style="flex:1; text-align:left;">
+        <div class="mname">${esc(mm.name)}</div>
+        <div class="mrew">${won(mm.reward)}</div>
+      </div>
+      <button class="mbtn ${on?'done':'do'}" data-mid="${mm.id}">${on?'✓ 완료':'하기'}</button>
+    </div>`;
+  }).join('') || '<p style="color:#9bb3d4;">미션이 없어요. 아빠가 추가해줄 거예요!</p>';
+
+  const led=buildLedger().slice(-3).reverse();
+  const ledHtml = led.length? led.map(r=>`<div class="ledrow">
+      <span>${r.date.split('-').slice(1).join('/')} · ${esc(r.note||(r.type==='in'?'수입':'지출'))}</span>
+      <span class="amt ${r.type}">${r.type==='in'?'+':'−'}${won(r.amount)}</span>
+    </div>`).join('') : '<div style="font-size:14px;color:#9bb3d4;text-align:center;margin-top:6px;">아직 기록이 없어요</div>';
+
+  const confettiHtml=state.confetti.map(s=>'<div style="'+s+'"></div>').join('');
 
   appEl.innerHTML = `
   <div class="wrap">
-    <button class="gear" id="gear" aria-label="설정">⚙️</button>
+    <button class="gear" id="gear">⚙️</button>
     <div class="confetti-wrap">${confettiHtml}</div>
-    <h1 class="title">🥛 우유 미션 게임</h1>
+    <h1 class="title">🏆 우리집 미션 게임</h1>
+    <p class="subtitle">미션 하고 용돈 모으기 🐮</p>
 
     <div class="card hero">
-      <div style="font-size:84px; line-height:1; animation:${cowAnim};">${cowFace}</div>
-      <div style="font-size:22px; color:#6b8cba; margin:6px 0 14px; min-height:28px;">${speech}</div>
-      <button id="tapToday" style="${tapStyle}">${tapLabel}</button>
+      <div style="font-size:78px; line-height:1; animation:${anim};">${face}</div>
+      <div style="font-size:21px; color:#6b8cba; margin:4px 0 14px; min-height:26px;">${speech}</div>
+      <div style="text-align:left;">${missionHtml}</div>
 
-      <div style="margin-top:20px; background:#ecfaee; border:3px solid #8fd694; border-radius:20px; padding:14px;">
-        <div style="font-size:18px; color:#3a8f43;">🐷 저금통</div>
-        <div style="font-family:Jua,sans-serif; font-size:40px; color:#2e9e3a;">${won(v.money)}</div>
-        <div style="font-size:16px; color:#6cbf73;">이번 달 ${v.doneCount}일 성공 · 한 잔 ${won(v.reward)}</div>
+      <div style="margin-top:14px; background:#ecfaee; border:3px solid #8fd694; border-radius:20px; padding:14px;">
+        <div style="font-size:18px; color:#3a8f43;">🐷 저금통 (모은 돈)</div>
+        <div style="font-family:Jua,sans-serif; font-size:40px; color:#2e9e3a;">${won(v.balance)}</div>
+        <div style="font-size:15px; color:#6cbf73;">이번 달 ${won(v.monthEarned)} 적립 · 지금까지 쓴 돈 ${won(v.ledOut)}</div>
       </div>
 
-      <div style="display:flex; gap:10px; margin-top:14px;">
-        <div style="flex:1; background:#fff3e0; border:3px solid #ffc266; border-radius:16px; padding:10px;">
-          <div style="font-size:30px;">🔥</div>
-          <div style="font-family:Jua,sans-serif; font-size:24px; color:#e8820a;">${v.streak}일 연속</div>
+      <div class="twobox">
+        <div class="bbox" style="background:#fff3e0; border:3px solid #ffc266;">
+          <div style="font-size:28px;">🔥</div>
+          <div style="font-family:Jua,sans-serif; font-size:22px; color:#e8820a;">${v.streak}일 연속</div>
         </div>
-        <div style="flex:1; background:#eef3ff; border:3px solid #9db8f0; border-radius:16px; padding:10px;">
-          <div style="font-size:30px;">${v.levelEmoji}</div>
-          <div style="font-family:Jua,sans-serif; font-size:24px; color:#3a5fb0;">Lv.${v.level}</div>
+        <div class="bbox" style="background:#eef3ff; border:3px solid #9db8f0;">
+          <div style="font-size:28px;">${v.levelEmoji}</div>
+          <div style="font-family:Jua,sans-serif; font-size:22px; color:#3a5fb0;">Lv.${v.level}</div>
         </div>
       </div>
       <div style="margin-top:12px; text-align:left;">
-        <div style="font-size:15px; color:#9bb3d4; margin-bottom:4px;">다음 레벨까지 ${v.toNext}잔</div>
+        <div style="font-size:15px; color:#9bb3d4; margin-bottom:4px;">다음 레벨까지 ${v.toNext}개</div>
         <div style="background:#eaf1fb; border-radius:99px; height:16px; overflow:hidden;">
           <div style="height:100%; width:${v.progressPct}%; background:linear-gradient(90deg,#8fd694,#5fc46c); border-radius:99px; transition:width .4s ease;"></div>
         </div>
       </div>
+
+      <button class="bigbtn" id="spendBtn" style="margin-top:16px; background:#ff9bb3; box-shadow:0 5px 0 #e87a95;">🛒 오늘 뭐 샀어요?</button>
     </div>
 
-    <div class="card calcard">
+    <div class="card sec">
+      <div class="sec-title">📒 용돈기입장</div>
+      ${ledHtml}
+    </div>
+
+    <div class="card sec">
       <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
         <button class="arrow" id="prev">‹</button>
-        <div style="font-family:Jua,sans-serif; font-size:22px; color:#2e5d9f;">${state.y}년 ${state.m+1}월</div>
+        <div style="font-family:Jua,sans-serif; font-size:20px; color:#2e5d9f;">${state.y}년 ${state.m+1}월</div>
         <button class="arrow" id="next">›</button>
       </div>
       <div class="grid7" style="margin-bottom:5px;">
@@ -319,256 +385,267 @@ function renderKid(){
     <div class="statusbar">${syncLabel()}</div>
   </div>`;
 
-  // 이벤트
-  document.getElementById('gear').onclick = openSettings;
-  document.getElementById('tapToday').onclick = ()=>{
-    if(!isThisMonth){ const n=new Date(); state.y=n.getFullYear(); state.m=n.getMonth(); }
-    const n=new Date();
-    toggle(n.getFullYear(), n.getMonth(), n.getDate(), true);
-  };
-  document.getElementById('prev').onclick = ()=>{ shiftMonth(-1); };
-  document.getElementById('next').onclick = ()=>{ shiftMonth(1); };
+  document.getElementById('gear').onclick=openSettings;
+  document.getElementById('prev').onclick=()=>shiftMonth(-1);
+  document.getElementById('next').onclick=()=>shiftMonth(1);
+  document.getElementById('spendBtn').onclick=()=>openEntry('out', true);
+  document.querySelectorAll('.mbtn').forEach(b=>{
+    b.onclick=()=>{ const n=new Date(); toggleMission(n.getFullYear(),n.getMonth(),n.getDate(), b.getAttribute('data-mid'), true); };
+  });
   bindCells();
 }
 
-/* ---------- 화면: 아빠 관리자 모드 ---------- */
+/* ---------- 아빠 관리자 모드 ---------- */
 function renderAdmin(){
-  const v = derive();
+  const v=derive();
+  const missionHtml = state.data.missions.map(mm=>`<div class="mrow">
+      <span class="memoji">${mm.emoji||'⭐'}</span>
+      <div style="flex:1; text-align:left;">
+        <div class="mname">${esc(mm.name)}</div>
+        <div class="mrew">${won(mm.reward)}</div>
+      </div>
+      <button class="editx" data-edit="${mm.id}">✎</button>
+      <button class="delx" data-delm="${mm.id}">✕</button>
+    </div>`).join('') || '<p style="color:#9bb3d4;">미션이 없습니다.</p>';
+
+  const led=buildLedger().slice().reverse();
+  const ledHtml = led.length? led.map(r=>`<div class="ledrow">
+      <span>📅 ${r.date.split('-').slice(1).join('/')} · ${esc(r.note||'')} <span style="color:#9bb3d4;">(잔액 ${won(r.bal)})</span></span>
+      <span style="display:flex; align-items:center; gap:6px;">
+        <span class="amt ${r.type}">${r.type==='in'?'+':'−'}${won(r.amount)}</span>
+        ${r.auto?'':'<button class="editx" data-edite="'+r.id+'">✎</button><button class="delx" data-dele="'+r.id+'">✕</button>'}
+      </span>
+    </div>`).join('') : '<div style="font-size:14px;color:#9bb3d4;text-align:center;margin-top:6px;">아직 기록이 없어요</div>';
+
   appEl.innerHTML = `
   <div class="wrap">
-    <button class="gear" id="gear" aria-label="설정">⚙️</button>
+    <button class="gear" id="gear">⚙️</button>
     <div class="adminbadge">👨‍👦 아빠 관리자 모드</div>
-    <h1 class="title">우유 미션 현황</h1>
+    <h1 class="title">우리집 미션 현황</h1>
 
     <div class="card hero" style="text-align:left;">
       <div class="statgrid">
-        <div class="statbox" style="background:#fff7d6; border:2px solid #ffd76b;">
-          <div class="lab" style="color:#b8860b;">이번 달 성공</div>
-          <div class="val" style="color:#e8a300;">${v.doneCount}일</div>
-        </div>
-        <div class="statbox" style="background:#ecfaee; border:2px solid #8fd694;">
-          <div class="lab" style="color:#3a8f43;">이번 달 적립</div>
-          <div class="val" style="color:#2e9e3a;">${won(v.money)}</div>
-        </div>
-        <div class="statbox" style="background:#fff3e0; border:2px solid #ffc266;">
-          <div class="lab" style="color:#c9740a;">🔥 연속</div>
-          <div class="val" style="color:#e8820a;">${v.streak}일</div>
-        </div>
-        <div class="statbox" style="background:#eef3ff; border:2px solid #9db8f0;">
-          <div class="lab" style="color:#3a5fb0;">레벨 / 누적</div>
-          <div class="val" style="color:#3a5fb0;">${v.levelEmoji} Lv.${v.level}</div>
-        </div>
+        <div class="statbox" style="background:#fff7d6; border:2px solid #ffd76b;"><div class="lab" style="color:#b8860b;">이번 달 적립</div><div class="val" style="color:#e8a300;">${won(v.monthEarned)}</div></div>
+        <div class="statbox" style="background:#ecfaee; border:2px solid #8fd694;"><div class="lab" style="color:#3a8f43;">저금통 잔액</div><div class="val" style="color:#2e9e3a;">${won(v.balance)}</div></div>
+        <div class="statbox" style="background:#fff3e0; border:2px solid #ffc266;"><div class="lab" style="color:#c9740a;">🔥 연속</div><div class="val" style="color:#e8820a;">${v.streak}일</div></div>
+        <div class="statbox" style="background:#eef3ff; border:2px solid #9db8f0;"><div class="lab" style="color:#3a5fb0;">레벨</div><div class="val" style="color:#3a5fb0;">${v.levelEmoji} Lv.${v.level}</div></div>
       </div>
-
-      <div style="background:#f7faff; border-radius:18px; padding:14px; margin-bottom:14px;">
-        <div style="font-size:17px; color:#2e5d9f; text-align:center;">한 잔당 용돈</div>
-        <div class="rewardrow">
-          <button class="stepbtn" id="rMinus">−</button>
-          <div class="rewardval" id="rVal">${won(v.reward)}</div>
-          <button class="stepbtn" id="rPlus">＋</button>
-        </div>
-        <div style="font-size:13px; color:#9bb3d4; text-align:center;">100원 단위 · 100~5,000원</div>
-      </div>
-
-      <div style="background:#f3fff4; border:2px solid #cdeccf; border-radius:18px; padding:14px; margin-bottom:6px;">
-        <div style="display:flex; justify-content:space-between; font-size:17px; margin-bottom:4px;"><span style="color:#3a8f43;">총 적립(전체)</span><b style="color:#2e9e3a;">${won(v.totalEarned)}</b></div>
-        <div style="display:flex; justify-content:space-between; font-size:17px; margin-bottom:4px;"><span style="color:#3a8f43;">총 지급</span><b style="color:#c0392b;">${won(v.totalPaid)}</b></div>
-        <hr style="border:none; border-top:1px dashed #cdeccf; margin:8px 0;">
-        <div style="display:flex; justify-content:space-between; font-size:20px;"><span style="color:#2e5d9f;">미지급 잔액</span><b style="font-family:Jua,sans-serif; color:#2e5d9f;">${won(v.balance)}</b></div>
-        <button class="paybtn" id="payBtn" style="margin-top:12px;">💸 지금 정산하기</button>
-        <div id="payList">${renderPayList()}</div>
+      <div style="background:#f3fff4; border:2px solid #cdeccf; border-radius:16px; padding:12px;">
+        <div style="display:flex; justify-content:space-between; font-size:16px; margin-bottom:3px;"><span style="color:#3a8f43;">총 수입</span><b style="color:#2e9e3a;">${won(v.totalIn)}</b></div>
+        <div style="display:flex; justify-content:space-between; font-size:16px;"><span style="color:#d35400;">총 지출</span><b style="color:#d35400;">${won(v.ledOut)}</b></div>
       </div>
     </div>
 
-    <div class="card calcard">
-      <div style="font-size:15px; color:#9bb3d4; text-align:center; margin-bottom:8px;">날짜를 눌러 체크를 수정/승인할 수 있어요</div>
+    <div class="card sec">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div class="sec-title" style="margin:0;">🎯 미션 관리</div>
+        <button class="smallbtn primary" id="addMission">+ 미션 추가</button>
+      </div>
+      <div style="margin-top:12px;">${missionHtml}</div>
+    </div>
+
+    <div class="card sec">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div class="sec-title" style="margin:0;">📒 용돈기입장</div>
+        <span>
+          <button class="smallbtn" id="addIn" style="color:#2e9e3a;">+ 수입</button>
+          <button class="smallbtn" id="addOut" style="color:#d35400;">− 지출</button>
+        </span>
+      </div>
+      <div style="margin-top:12px;">${ledHtml}</div>
+    </div>
+
+    <div class="card sec">
+      <div style="font-size:14px; color:#9bb3d4; text-align:center; margin-bottom:8px;">날짜를 눌러 미션 체크를 수정/승인할 수 있어요</div>
       <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
         <button class="arrow" id="prev">‹</button>
-        <div style="font-family:Jua,sans-serif; font-size:22px; color:#2e5d9f;">${state.y}년 ${state.m+1}월</div>
+        <div style="font-family:Jua,sans-serif; font-size:20px; color:#2e5d9f;">${state.y}년 ${state.m+1}월</div>
         <button class="arrow" id="next">›</button>
       </div>
       <div class="grid7" style="margin-bottom:5px;">
         ${WEEKDAYS.map(w=>'<div style="text-align:center; font-size:14px; color:#9bb3d4; font-weight:700;">'+w+'</div>').join('')}
       </div>
       <div class="grid7" id="cells">${buildCells()}</div>
-      <button class="linkbtn" id="resetMonth" style="display:block; margin:14px auto 0;">이번 달 기록 지우기</button>
     </div>
 
     <div class="statusbar">${syncLabel()} · 방코드: ${CFG.familyCode}</div>
   </div>`;
 
-  document.getElementById('gear').onclick = openSettings;
-  document.getElementById('prev').onclick = ()=>{ shiftMonth(-1); };
-  document.getElementById('next').onclick = ()=>{ shiftMonth(1); };
-  document.getElementById('rMinus').onclick = ()=>changeReward(-100);
-  document.getElementById('rPlus').onclick = ()=>changeReward(100);
-  document.getElementById('payBtn').onclick = openPayout;
-  document.getElementById('resetMonth').onclick = resetMonth;
+  document.getElementById('gear').onclick=openSettings;
+  document.getElementById('prev').onclick=()=>shiftMonth(-1);
+  document.getElementById('next').onclick=()=>shiftMonth(1);
+  document.getElementById('addMission').onclick=()=>openMission(null);
+  document.getElementById('addIn').onclick=()=>openEntry('in', false);
+  document.getElementById('addOut').onclick=()=>openEntry('out', false);
+  document.querySelectorAll('[data-edit]').forEach(b=> b.onclick=()=>openMission(b.getAttribute('data-edit')));
+  document.querySelectorAll('[data-delm]').forEach(b=> b.onclick=()=>deleteMission(b.getAttribute('data-delm')));
+  document.querySelectorAll('[data-dele]').forEach(b=> b.onclick=()=>deleteEntry(b.getAttribute('data-dele')));
+  document.querySelectorAll('[data-edite]').forEach(b=> b.onclick=()=>editEntry(b.getAttribute('data-edite')));
   bindCells();
-  document.querySelectorAll('[data-del]').forEach(b=>{
-    b.onclick = ()=>deletePayout(b.getAttribute('data-del'));
-  });
-}
-
-function renderPayList(){
-  const ps = (state.data.payouts||[]).slice().sort((a,b)=> (b.date||'').localeCompare(a.date||''));
-  if(!ps.length) return '<div style="font-size:14px; color:#9bb3d4; text-align:center; margin-top:8px;">아직 지급 기록이 없어요</div>';
-  return ps.map(p=>`<div class="payitem">
-      <span>📅 ${p.date||''} · <b>${won(p.amount)}</b>${p.note?' · '+escapeHtml(p.note):''}</span>
-      <button class="delx" data-del="${p.id}">✕</button>
-    </div>`).join('');
 }
 
 /* ---------- 액션 ---------- */
-function shiftMonth(delta){
-  let nm=state.m+delta, ny=state.y;
-  if(nm<0){ nm=11; ny--; } if(nm>11){ nm=0; ny++; }
-  state.y=ny; state.m=nm; render();
-}
-function bindCells(){
-  document.querySelectorAll('#cells .cell').forEach(c=>{
-    const d = parseInt(c.getAttribute('data-d'),10);
-    c.onclick = ()=> toggle(state.y, state.m, d, getRole()==='kid');
-  });
-}
-function changeReward(delta){
-  let r = (state.data.reward||CFG.defaultReward) + delta;
-  r = Math.max(100, Math.min(5000, r));
-  state.data.reward = r; save(); render();
-}
-function resetMonth(){
-  if(!confirm(state.y+'년 '+(state.m+1)+'월 기록을 모두 지울까요?')) return;
-  const done = Object.assign({}, state.data.done);
-  const pre = monthPrefix(state.y, state.m);
-  Object.keys(done).forEach(k=>{ if(k.startsWith(pre)) delete done[k]; });
-  state.data.done = done; save(); render();
-}
-function deletePayout(id){
-  state.data.payouts = (state.data.payouts||[]).filter(p=>p.id!==id);
+function shiftMonth(delta){ let nm=state.m+delta, ny=state.y; if(nm<0){nm=11;ny--;} if(nm>11){nm=0;ny++;} state.y=ny; state.m=nm; render(); }
+
+function deleteMission(id){
+  const mm=missionById(id); if(!mm) return;
+  if(!confirm('"'+mm.name+'" 미션을 삭제할까요?\n(지난 기록의 적립액은 그만큼 줄어듭니다)')) return;
+  state.data.missions=state.data.missions.filter(x=>x.id!==id);
   save(); render();
 }
+function deleteEntry(id){ state.data.ledger=state.data.ledger.filter(e=>e.id!==id); save(); render(); }
 
-/* ---------- 오버레이: 정산 입력 ---------- */
-function openPayout(){
-  const v = derive();
-  const todayStr = new Date().toISOString().slice(0,10);
-  const ov = makeOverlay(`
-    <h2>💸 정산하기</h2>
-    <p>아이에게 준 용돈을 기록해요</p>
-    <input class="field" id="payAmt" type="number" inputmode="numeric" placeholder="금액(원)" value="${v.balance>0?v.balance:''}">
-    <input class="field" id="payDate" type="date" value="${todayStr}">
-    <input class="field" id="payNote" placeholder="메모 (선택) 예: 6월 용돈 지급">
+/* 미션 추가/수정 */
+function openMission(id){
+  const mm = id? missionById(id) : null;
+  const ov=makeOverlay(`
+    <h2>${mm?'미션 수정':'미션 추가'}</h2>
+    <p>이모지 · 이름 · 한 번 할 때 용돈</p>
+    <input class="field" id="mEmoji" placeholder="이모지 (예: 🐕)" value="${mm?esc(mm.emoji):''}" maxlength="4">
+    <input class="field" id="mName" placeholder="미션 이름 (예: 쿠키 산책)" value="${mm?esc(mm.name):''}">
+    <input class="field" id="mRew" type="number" inputmode="numeric" placeholder="용돈(원)" value="${mm?mm.reward:500}">
     <div style="display:flex; gap:10px;">
-      <button class="smallbtn" id="payCancel" style="flex:1;">취소</button>
-      <button class="smallbtn primary" id="paySave" style="flex:1;">기록하기</button>
-    </div>
-  `);
-  ov.querySelector('#payCancel').onclick = ()=>ov.remove();
-  ov.querySelector('#paySave').onclick = ()=>{
-    const amt = Math.round(Number(ov.querySelector('#payAmt').value)||0);
-    if(amt<=0){ alert('금액을 입력해 주세요'); return; }
-    const rec = { id: Date.now()+'-'+Math.random().toString(36).slice(2,7),
-                  amount: amt, date: ov.querySelector('#payDate').value || todayStr,
-                  note: ov.querySelector('#payNote').value.trim() };
-    state.data.payouts = (state.data.payouts||[]).concat([rec]);
+      <button class="smallbtn" id="mCancel" style="flex:1;">취소</button>
+      <button class="smallbtn primary" id="mSave" style="flex:1;">저장</button>
+    </div>`);
+  ov.querySelector('#mCancel').onclick=()=>ov.remove();
+  ov.querySelector('#mSave').onclick=()=>{
+    const emoji=ov.querySelector('#mEmoji').value.trim()||'⭐';
+    const name=ov.querySelector('#mName').value.trim();
+    const reward=Math.max(0, Math.round(Number(ov.querySelector('#mRew').value)||0));
+    if(!name){ alert('미션 이름을 입력해 주세요'); return; }
+    if(mm){ mm.emoji=emoji; mm.name=name; mm.reward=reward; }
+    else { state.data.missions.push({ id:rid(), emoji, name, reward }); }
     save(); ov.remove(); render();
   };
 }
 
-/* ---------- 오버레이: 설정 / 역할 ---------- */
-function openSettings(){
-  const role = getRole();
-  const ov = makeOverlay(`
-    <h2>⚙️ 설정</h2>
-    <p>이 기기 모드: <b style="color:#2e5d9f;">${role==='admin'?'아빠 관리자':'아들(아이)'}</b></p>
-    ${role==='admin'
-      ? '<button class="rolebtn kid" id="toKid">🧒 아이 모드로 바꾸기</button>'
-      : '<button class="rolebtn dad" id="toAdmin">👨‍👦 아빠 관리자 모드로 바꾸기</button>'}
-    <button class="smallbtn" id="closeSet" style="width:100%; margin-top:4px;">닫기</button>
-  `);
-  ov.querySelector('#closeSet').onclick = ()=>ov.remove();
-  const toKid = ov.querySelector('#toKid');
-  if(toKid) toKid.onclick = ()=>{ setRole('kid'); ov.remove(); render(); };
-  const toAdmin = ov.querySelector('#toAdmin');
-  if(toAdmin) toAdmin.onclick = ()=>{ ov.remove(); askPin(()=>{ setRole('admin'); render(); }); };
+/* 용돈기입장 항목 추가/수정 */
+function openEntry(type, kid, existing){
+  const todayStr=new Date().toISOString().slice(0,10);
+  const e=existing||null;
+  const ov=makeOverlay(`
+    <h2>${e?'기록 수정':(type==='in'?'수입 추가':(kid?'🛒 오늘 뭐 샀어요?':'지출 추가'))}</h2>
+    <div class="seg" id="seg">
+      <button data-t="in" class="${(e?e.type:type)==='in'?'sel-in':''}">+ 수입</button>
+      <button data-t="out" class="${(e?e.type:type)==='out'?'sel-out':''}">− 지출</button>
+    </div>
+    <input class="field" id="eAmt" type="number" inputmode="numeric" placeholder="금액(원)" value="${e?e.amount:''}">
+    <input class="field" id="eNote" placeholder="${type==='in'?'내용 (예: 용돈, 세뱃돈)':'무엇을 샀나요? (예: 과자)'}" value="${e?esc(e.note||''):''}">
+    <input class="field" id="eDate" type="date" value="${e?e.date9||e.date:todayStr}">
+    <div style="display:flex; gap:10px;">
+      <button class="smallbtn" id="eCancel" style="flex:1;">취소</button>
+      <button class="smallbtn primary" id="eSave" style="flex:1;">${e?'수정':'기록하기'}</button>
+    </div>`);
+  let t = e? e.type : type;
+  const segBtns=ov.querySelectorAll('#seg button');
+  segBtns.forEach(b=> b.onclick=()=>{ t=b.getAttribute('data-t'); segBtns.forEach(x=>x.className=''); b.className = t==='in'?'sel-in':'sel-out'; });
+  ov.querySelector('#eCancel').onclick=()=>ov.remove();
+  ov.querySelector('#eSave').onclick=()=>{
+    const amount=Math.round(Number(ov.querySelector('#eAmt').value)||0);
+    if(amount<=0){ alert('금액을 입력해 주세요'); return; }
+    const isoDate=ov.querySelector('#eDate').value||todayStr;
+    const [yy,mm,dd]=isoDate.split('-').map(Number);
+    const dateKey = yy+'-'+mm+'-'+dd;
+    const note=ov.querySelector('#eNote').value.trim();
+    if(e){ e.type=t; e.amount=amount; e.note=note; e.date=dateKey; delete e.date9; }
+    else { state.data.ledger.push({ id:rid(), type:t, amount, note, date:dateKey }); }
+    save(); ov.remove(); render();
+  };
+}
+function editEntry(id){
+  const e=state.data.ledger.find(x=>x.id===id); if(!e) return;
+  // date(YYYY-M-D) -> input[type=date] 용 YYYY-MM-DD
+  const [y,m,d]=e.date.split('-').map(Number);
+  e.date9 = y+'-'+String(m).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+  openEntry(e.type, false, e);
 }
 
+/* 날짜별 미션 체크 편집 (달력 셀 클릭) */
+function openDay(y,m,d){
+  const ids=doneIds(y,m,d);
+  const rows=state.data.missions.map(mm=>{
+    const on=ids.includes(mm.id);
+    return `<div class="mrow ${on?'on':''}" style="cursor:pointer;" data-tg="${mm.id}">
+      <span class="memoji">${mm.emoji||'⭐'}</span>
+      <div style="flex:1; text-align:left;"><div class="mname">${esc(mm.name)}</div><div class="mrew">${won(mm.reward)}</div></div>
+      <span style="font-size:24px;">${on?'✅':'⬜'}</span>
+    </div>`;
+  }).join('') || '<p style="color:#9bb3d4;">미션이 없습니다.</p>';
+  const ov=makeOverlay(`
+    <h2>${y}년 ${m+1}월 ${d}일</h2>
+    <p>완료한 미션을 눌러서 켜고 끄세요</p>
+    <div>${rows}</div>
+    <button class="smallbtn" id="dClose" style="width:100%; margin-top:6px;">닫기</button>`);
+  ov.querySelector('#dClose').onclick=()=>ov.remove();
+  ov.querySelectorAll('[data-tg]').forEach(r=> r.onclick=()=>{
+    toggleMission(y,m,d, r.getAttribute('data-tg'), false);
+    ov.remove(); openDay(y,m,d); // 새로고침
+  });
+}
+
+/* ---------- 설정 / 역할 ---------- */
+function openSettings(){
+  const role=getRole();
+  const ov=makeOverlay(`
+    <h2>⚙️ 설정</h2>
+    <p>이 기기 모드: <b style="color:#2e5d9f;">${role==='admin'?'아빠 관리자':'아이(아들)'}</b></p>
+    ${role==='admin'? '<button class="rolebtn kid" id="toKid">🧒 아이 모드로 바꾸기</button>'
+                    : '<button class="rolebtn dad" id="toAdmin">👨‍👦 아빠 관리자 모드로 바꾸기</button>'}
+    <button class="smallbtn" id="closeSet" style="width:100%; margin-top:4px;">닫기</button>`);
+  ov.querySelector('#closeSet').onclick=()=>ov.remove();
+  const tk=ov.querySelector('#toKid'); if(tk) tk.onclick=()=>{ setRole('kid'); ov.remove(); render(); };
+  const ta=ov.querySelector('#toAdmin'); if(ta) ta.onclick=()=>{ ov.remove(); askPin(()=>{ setRole('admin'); render(); }); };
+}
 function askPin(onOk){
-  const ov = makeOverlay(`
-    <h2>🔒 비밀번호</h2>
-    <p>아빠 관리자 비밀번호 4자리</p>
+  const ov=makeOverlay(`
+    <h2>🔒 비밀번호</h2><p>아빠 관리자 비밀번호 4자리</p>
     <input class="pininput" id="pin" type="password" inputmode="numeric" maxlength="4" placeholder="••••">
     <div style="display:flex; gap:10px;">
       <button class="smallbtn" id="pinCancel" style="flex:1;">취소</button>
       <button class="smallbtn primary" id="pinOk" style="flex:1;">확인</button>
-    </div>
-  `);
-  const input = ov.querySelector('#pin');
-  setTimeout(()=>input.focus(), 100);
-  const submit = ()=>{
-    if(input.value === String(CFG.adminPin)){ ov.remove(); onOk(); }
-    else { input.value=''; input.placeholder='틀렸어요'; input.style.borderColor='#e57373'; }
-  };
-  ov.querySelector('#pinOk').onclick = submit;
-  ov.querySelector('#pinCancel').onclick = ()=>{ ov.remove(); render(); };
-  input.addEventListener('keydown', e=>{ if(e.key==='Enter') submit(); });
+    </div>`);
+  const input=ov.querySelector('#pin'); setTimeout(()=>input.focus(),100);
+  const submit=()=>{ if(input.value===String(CFG.adminPin)){ ov.remove(); onOk(); } else { input.value=''; input.placeholder='틀렸어요'; input.style.borderColor='#e57373'; } };
+  ov.querySelector('#pinOk').onclick=submit;
+  ov.querySelector('#pinCancel').onclick=()=>{ ov.remove(); render(); };
+  input.addEventListener('keydown',e=>{ if(e.key==='Enter') submit(); });
 }
-
-/* 최초 역할 선택 */
 function chooseRole(){
-  const ov = makeOverlay(`
-    <h2>누구의 폰인가요?</h2>
-    <p>이 기기에서 사용할 모드를 골라주세요</p>
+  const ov=makeOverlay(`
+    <h2>누구의 폰인가요?</h2><p>이 기기에서 사용할 모드를 골라주세요</p>
     <button class="rolebtn kid" id="pickKid">🧒 아이(아들) 폰</button>
-    <button class="rolebtn dad" id="pickDad">👨‍👦 아빠(관리자) 폰</button>
-  `, true);
-  ov.querySelector('#pickKid').onclick = ()=>{ setRole('kid'); ov.remove(); render(); };
-  ov.querySelector('#pickDad').onclick = ()=>{ ov.remove(); askPin(()=>{ setRole('admin'); render(); }); };
+    <button class="rolebtn dad" id="pickDad">👨‍👦 아빠(관리자) 폰</button>`, true);
+  ov.querySelector('#pickKid').onclick=()=>{ setRole('kid'); ov.remove(); render(); };
+  ov.querySelector('#pickDad').onclick=()=>{ ov.remove(); askPin(()=>{ setRole('admin'); render(); }); };
 }
 
-/* ---------- 오버레이 유틸 ---------- */
-function makeOverlay(innerHtml, sticky){
-  const ov = document.createElement('div');
-  ov.className='overlay';
-  ov.innerHTML = '<div class="sheet">'+innerHtml+'</div>';
-  if(!sticky){ ov.addEventListener('click', e=>{ if(e.target===ov) ov.remove(); }); }
-  document.body.appendChild(ov);
-  return ov;
+/* ---------- 공통 ---------- */
+function makeOverlay(html, sticky){
+  const ov=document.createElement('div'); ov.className='overlay';
+  ov.innerHTML='<div class="sheet">'+html+'</div>';
+  if(!sticky) ov.addEventListener('click',e=>{ if(e.target===ov) ov.remove(); });
+  document.body.appendChild(ov); return ov;
 }
-function escapeHtml(s){ return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function syncLabel(){
-  if(!configFilled) return '⚠️ Firebase 미설정 — 이 기기에만 저장됩니다 (배포가이드 참고)';
-  return { connecting:'☁️ 연결 중…', ok:'✅ 실시간 동기화 켜짐', offline:'📴 오프라인 — 연결되면 자동 저장', error:'⚠️ 연결 오류' }[state.sync] || '';
+  if(!configFilled) return '⚠️ Firebase 미설정 — 이 기기에만 저장됩니다';
+  return { connecting:'☁️ 연결 중…', ok:'✅ 실시간 동기화 켜짐', offline:'📴 오프라인 — 연결되면 자동 저장', error:'⚠️ 연결 오류' }[state.sync]||'';
 }
-
-/* ---------- 렌더 ---------- */
 function render(){
-  if(!state.ready){ return; }
-  if(!getRole()){ // 역할 미선택 → 선택 화면(배경은 아들 모드)
-    renderKid();
-    if(!document.querySelector('.overlay')) chooseRole();
-    return;
-  }
+  if(!state.ready) return;
+  if(!getRole()){ renderKid(); if(!document.querySelector('.overlay')) chooseRole(); return; }
   if(getRole()==='admin') renderAdmin(); else renderKid();
 }
 
 /* ---------- 부팅 ---------- */
 (function boot(){
-  // 로컬 백업 먼저 로드(오프라인/미설정 대비)
-  try {
-    const saved = JSON.parse(localStorage.getItem('milkMission')||'null');
-    if(saved && typeof saved==='object') state.data.done = saved;
-  } catch(e){}
-  state.ready = true;
-  const ok = initFirebase();
-  if(!ok){ state.sync = configFilled?'error':'offline'; }
+  try { const s=JSON.parse(localStorage.getItem('milkData')||'null'); if(s&&s.missions) state.data=migrate(s); } catch(e){}
+  state.ready=true;
+  if(!initFirebase()) state.sync = configFilled?'error':'offline';
   render();
 })();
 
-// 서비스워커 등록(홈화면 추가/오프라인)
-if('serviceWorker' in navigator){
-  window.addEventListener('load', ()=> navigator.serviceWorker.register('./sw.js').catch(()=>{}));
-}
+if('serviceWorker' in navigator){ window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{})); }
 </script>
 </body>
 </html>
