@@ -123,7 +123,7 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, doc, onSnapshot, setDoc, enableIndexedDbPersistence }
+import { getFirestore, doc, onSnapshot, setDoc, updateDoc, enableIndexedDbPersistence }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const CFG = window.MILK_CONFIG;
@@ -197,22 +197,31 @@ function initFirebase(){
     onSnapshot(docRef, (snap)=>{
       state.sync='ok';
       if(snap.exists()){ state.data = migrate(snap.data()); }
-      else { save(); }
+      else { setDoc(docRef, state.data).catch(()=>{}); }   // 최초 1회 문서 생성
       render();
     }, (err)=>{ state.sync='error'; console.error(err); render(); });
     return true;
   } catch(e){ console.error(e); state.sync='error'; return false; }
 }
 
-let saveTimer=null;
-function save(){
+let saveTimer=null, savePatch={};
+function save(scope){
   try { localStorage.setItem('milkData', JSON.stringify(state.data)); } catch(e){}
   if(!docRef) return;
+  // 변경된 부분만 모아서 저장 (아이별로 자기 칸만 → 서로 안 덮어씀)
+  if(scope==='missions') savePatch['missions']=state.data.missions;
+  else { const id=getKidId(); savePatch['kids.'+id]=state.data.kids[id]; }
   clearTimeout(saveTimer);
   saveTimer = setTimeout(()=>{
-    setDoc(docRef, state.data, { merge:false })
+    const patch=savePatch; savePatch={};
+    updateDoc(docRef, patch)
       .then(()=>{ if(state.sync!=='ok'){ state.sync='ok'; render(); } })
-      .catch((e)=>{ state.sync='offline'; console.warn('오프라인 저장 대기:',e); render(); });
+      .catch((e)=>{
+        // 문서가 아직 없으면 생성, 그 외엔 오프라인 대기
+        setDoc(docRef, state.data, { merge:true })
+          .then(()=>{ state.sync='ok'; render(); })
+          .catch(()=>{ state.sync='offline'; console.warn('오프라인 저장 대기:',e); render(); });
+      });
   }, 150);
 }
 
@@ -543,7 +552,7 @@ function deleteMission(id){
   const mm=missionById(id); if(!mm) return;
   if(!confirm('"'+mm.name+'" 미션을 삭제할까요?\n(지난 기록의 적립액은 그만큼 줄어듭니다)')) return;
   state.data.missions=state.data.missions.filter(x=>x.id!==id);
-  save(); render();
+  save('missions'); render();
 }
 function deleteEntry(id){ const kd=kidData(); kd.ledger=kd.ledger.filter(e=>e.id!==id); save(); render(); }
 
@@ -568,7 +577,7 @@ function openMission(id){
     if(!name){ alert('미션 이름을 입력해 주세요'); return; }
     if(mm){ mm.emoji=emoji; mm.name=name; mm.reward=reward; }
     else { state.data.missions.push({ id:rid(), emoji, name, reward }); }
-    save(); ov.remove(); render();
+    save('missions'); ov.remove(); render();
   };
 }
 
